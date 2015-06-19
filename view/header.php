@@ -1,5 +1,12 @@
 <?php
 $title = 'Assignment 1';
+$page = null;
+
+if($_GET['page'] == 'results'){
+	$page = 'view/results.php';
+} else {
+	$page = 'view/search.php';
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
