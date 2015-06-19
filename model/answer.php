@@ -1,4 +1,7 @@
 <?php
+if(!isset($_SESSION)){
+	session_start();
+}
 
 $redirect = "http://" . $_SERVER['HTTP_HOST'] . "/index.php?page=results";
 $wineName = $_GET['wineName'];
@@ -13,6 +16,12 @@ $minOrder = $_GET['minOrder'];
 $maxOrder = $_GET['maxOrder'];
 $minPrice = $_GET['minPrice'];
 $maxPrice = $_GET['maxPrice'];
+
+
+if(isset($_SESSION)){
+	$_SESSION['results']['wineName'] = $wineName;
+	$_SESSION['results']['wineryName'] = $wineryName;
+}
 
 header('Location: ' . $redirect);
 die();

@@ -1,4 +1,8 @@
 <?php
+if(!isset($_SESSION)){
+    session_start();
+}
+
 include 'connect/Database.php';
 include 'view/header.php';
 ?>
