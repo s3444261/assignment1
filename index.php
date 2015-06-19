@@ -1,5 +1,4 @@
 <?php
-include 'view/config.php';
 include 'connect/Database.php';
 include 'view/header.php';
 ?>

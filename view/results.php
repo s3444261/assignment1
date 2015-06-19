@@ -1,3 +1,4 @@
 <?php
-echo 'Results';
+echo 'Results<br />';
+
 ?>
