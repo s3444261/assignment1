@@ -1,6 +1,10 @@
 <?php
 
-include '../db.php';
+if(basename($_SERVER['PHP_SELF'] == '/model/answer.php')){
+	include '../../db.php';
+} else {
+	include '../db.php';
+}
 
 class Database extends PDO {
 	private static $instance;
