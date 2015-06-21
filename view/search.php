@@ -27,14 +27,16 @@ $wineData = new Winedata ();
 	</select>
 	</div>
 	<div class="form-group">
-		<label for="fromYear">From Year</label> <input type="text"
-			class="form-control" id="fromYear" name="fromYear"
-			placeholder="(Range) From Year">
+		<label for="fromYear">From Year</label> <select class="form-control"
+			id="fromYear" name="fromYear">
+		<?php echo $wineData->yearOptions(); ?>
+	</select>
 	</div>
 	<div class="form-group">
-		<label for="toYear">To Year</label> <input type="text"
-			class="form-control" id="toYear" name="toYear"
-			placeholder="(Range) To Year">
+		<label for="toYear">To Year</label> <select class="form-control"
+			id="toYear" name="toYear">
+		<?php echo $wineData->yearOptions(); ?>
+	</select>
 	</div>
 	<div class="form-group">
 		<label for="minStock">Minimum Number of Bottles in Stock (Per Wine)</label>

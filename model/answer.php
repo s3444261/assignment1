@@ -24,6 +24,7 @@ $conditional = false;
 $wineryNameLike = '%' . $wineryName . '%';
 $wineryNameField = false;
 $wineRegionField = false;
+$grapeVarietyField = false;
 
 if (isset ( $_SESSION )) {
 	$_SESSION ['message'] = '';
@@ -67,18 +68,25 @@ if (isset ( $_SESSION )) {
 	}
 	
 	if (strlen ( $wineRegion ) > 0 && $wineRegion != 'All') {
-		if (preg_match ( '/^[a-zA-Z \']+$/', $wineRegion )) {
-			if ($conditional) {
-				$query = $query . " AND region.region_name = :wineRegion";
-			} else {
-				$query = $query . " WHERE region.region_name = :wineRegion";
-				$conditional = true;
-			}
-			
-			$wineRegionField = true;
+		if ($conditional) {
+			$query = $query . " AND region.region_name = :wineRegion";
 		} else {
-			$_SESSION ['message'] = 'Region must contain letters, spaces & apostrophe\'s only!';
+			$query = $query . " WHERE region.region_name = :wineRegion";
+			$conditional = true;
 		}
+		
+		$wineRegionField = true;
+	}
+	
+	if (strlen ( $grapeVariety ) > 0) {
+		if ($conditional) {
+			$query = $query . " AND grape_variety.variety = :grapeVariety";
+		} else {
+			$query = $query . " WHERE grape_variety.variety = :grapeVariety";
+			$conditional = true;
+		}
+		
+		$grapeVarietyField = true;
 	}
 	
 	$_SESSION ['message'] = $query;
@@ -93,6 +101,9 @@ if (isset ( $_SESSION )) {
 	}
 	if ($wineRegionField) {
 		$stmt->bindParam ( ':wineRegion', $wineRegion );
+	}
+	if ($grapeVarietyField) {
+		$stmt->bindParam ( ':grapeVariety', $grapeVariety );
 	}
 	$stmt->execute ();
 	

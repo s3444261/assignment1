@@ -27,5 +27,17 @@ class Winedata {
 		}
 		return $options;
 	}
+	public function yearOptions() {
+		$query = "SELECT year FROM wine GROUP BY year ORDER BY year ASC";
+		$options = '<option></option>';
+		
+		$db = Database::getInstance ();
+		$stmt = $db->prepare ( $query );
+		$stmt->execute ();
+		while ( $row = $stmt->fetch ( PDO::FETCH_ASSOC ) ) {
+			$options = $options . '<option>' . $row ['year'] . '</option>';
+		}
+		return $options;
+	}
 }
 ?>
