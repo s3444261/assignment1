@@ -1,6 +1,7 @@
 <?php
-$r = array();
-echo 'Results<br />';
+echo '<h1>Results</h1>';
+
+echo $_SESSION['message'] . '<br /><br />';
 
 echo '<table class="table table-condensed">';
 echo '<tr>';
@@ -14,7 +15,8 @@ echo '<th>On Hand</th>';
 echo '<th>Cost</th>';
 echo '</tr>';
 
-for($i = 0; $i < count($_SESSION['results']); $i++){
+for($i = 0; $i < count($_SESSION['results']); $i++)
+{
 	echo '<tr>';
 	echo '<td>' , $_SESSION['results'][$i]['year'] . '</td>';
 	echo '<td>' , $_SESSION['results'][$i]['name'] . '</td>';

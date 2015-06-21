@@ -1,5 +1,6 @@
 <?php
 ?>
+<h1>Search</h1>
 <form action="model/answer.php" method="get">
   <div class="form-group">
     <label for="wineName">Wine Name or Part Thereof</label>

@@ -8,7 +8,6 @@ include '../connect/Database.php';
 
 $redirect = "http://" . $_SERVER['HTTP_HOST'] . "/index.php?page=results";
 
-/*
 $wineName = $_GET['wineName'];
 $wineryName = $_GET['wineryName'];
 $wineRegion = $_GET['wineRegion'];
@@ -16,14 +15,18 @@ $grapeVariety = $_GET['grapeVariety'];
 $fromYear = $_GET['fromYear'];
 $toYear = $_GET['toYear'];
 $minStock = $_GET['minStock'];
-$maxStock = $_GET['maxStock'];
 $minOrder = $_GET['minOrder'];
-$maxOrder = $_GET['maxOrder'];
 $minPrice = $_GET['minPrice'];
 $maxPrice = $_GET['maxPrice'];
-*/
-$query = "SELECT wine.year, wine.wine_name, wine_type.wine_type, 
-			grape_variety.variety, winery.winery_name, region.region_name, 
+$wineNameLike = '%'.$wineName.'%';
+$wineNameField = false;
+
+if(isset($_SESSION))
+{
+	$_SESSION['message'] = '';
+	
+	$query = "SELECT wine.year, wine.wine_name, wine_type.wine_type,
+			grape_variety.variety, winery.winery_name, region.region_name,
 			inventory.on_hand, inventory.cost
 			FROM wine
 			JOIN wine_type ON wine.wine_type = wine_type.wine_type_id
@@ -32,15 +35,31 @@ $query = "SELECT wine.year, wine.wine_name, wine_type.wine_type,
 			JOIN winery ON wine.winery_id = winery.winery_id
 			JOIN region ON winery.region_id = region.region_id
 			JOIN inventory ON inventory.wine_id = wine.wine_id";
-
-if(isset($_SESSION)){
-
+	
+	if(strlen($wineName) > 0)
+	{
+		if(preg_match('/^[a-zA-Z]+$/', $wineName))
+		{
+			$query = $query . " WHERE wine.wine_name LIKE :wineName"; 
+			$wineNameField = true;
+		}
+		else
+		{
+			$_SESSION['message'] = 'Wine name must contain letters only!';
+		}
+	}
+	$_SESSION['message'] = $query;
 	$db = Database::getInstance(); 
 	$stmt = $db->prepare($query); 
+	if($wineNameField)
+	{
+		$stmt->bindParam(':wineName', $wineNameLike);
+	}
 	$stmt->execute();
 	
 	$results = array();
-	while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+	while($row = $stmt->fetch(PDO::FETCH_ASSOC))
+	{
 		
 		$result = array('year' => $row['year'],
 						'name' => $row['wine_name'],
