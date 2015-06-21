@@ -20,6 +20,9 @@ $minPrice = $_GET['minPrice'];
 $maxPrice = $_GET['maxPrice'];
 $wineNameLike = '%'.$wineName.'%';
 $wineNameField = false;
+$conditional = false;
+$wineryNameLike = '%'.$wineryName.'%';
+$wineryNameField = false;
 
 if(isset($_SESSION))
 {
@@ -42,18 +45,47 @@ if(isset($_SESSION))
 		{
 			$query = $query . " WHERE wine.wine_name LIKE :wineName"; 
 			$wineNameField = true;
+			$conditional = true;
 		}
 		else
 		{
 			$_SESSION['message'] = 'Wine name must contain letters only!';
 		}
 	}
+	
+	if(strlen($wineryName) > 0)
+	{
+		if(preg_match('/^[a-zA-Z \']+$/', $wineryName))
+		{
+			if($conditional)
+			{
+				$query = $query . " AND winery.winery_name LIKE :wineryName";
+			}
+			else 
+			{
+				$query = $query . " WHERE winery.winery_name LIKE :wineryName";
+				$conditional = true;
+			}
+			
+			$wineryNameField = true;
+		}
+		else
+		{
+			$_SESSION['message'] = 'Winery name must contain letters, spaces & apostrophe\'s only!';
+		}
+	}
+	
 	$_SESSION['message'] = $query;
+	
 	$db = Database::getInstance(); 
 	$stmt = $db->prepare($query); 
 	if($wineNameField)
 	{
 		$stmt->bindParam(':wineName', $wineNameLike);
+	}
+	if($wineryNameField)
+	{
+		$stmt->bindParam(':wineryName', $wineryNameLike);
 	}
 	$stmt->execute();
 	
