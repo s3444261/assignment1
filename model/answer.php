@@ -14,6 +14,8 @@ $wineRegion = $_GET ['wineRegion'];
 $grapeVariety = $_GET ['grapeVariety'];
 $fromYear = $_GET ['fromYear'];
 $toYear = $_GET ['toYear'];
+$fromYearInt = intval ( $_GET ['fromYear'] );
+$toYearInt = intval ( $_GET ['toYear'] );
 $minStock = $_GET ['minStock'];
 $minOrder = $_GET ['minOrder'];
 $minPrice = $_GET ['minPrice'];
@@ -25,6 +27,7 @@ $wineryNameLike = '%' . $wineryName . '%';
 $wineryNameField = false;
 $wineRegionField = false;
 $grapeVarietyField = false;
+$yearField = false;
 
 if (isset ( $_SESSION )) {
 	$_SESSION ['message'] = '';
@@ -89,6 +92,33 @@ if (isset ( $_SESSION )) {
 		$grapeVarietyField = true;
 	}
 	
+	if (strlen ( $fromYear ) > 0 || strlen ( $toYear ) > 0) {
+		
+		$yearQuery = '';
+		
+		if (strlen ( $fromYear ) > 0 && strlen ( $toYear ) == 0) {
+			$yearQuery = "wine.year = :fromYear";
+		} else if (strlen ( $fromYear ) == 0 && strlen ( $toYear ) > 0) {
+			$yearQuery = "wine.year = :toYear";
+		} else if (strlen ( $fromYear ) > 0 && strlen ( $toYear ) > 0) {
+			if ($fromYearInt > $toYearInt) {
+				$yearQuery = "wine.year >= :toYear AND wine.year <= :fromYear";
+			} else if ($fromYearInt < $toYearInt) {
+				$yearQuery = "wine.year >= :fromYear AND wine.year <= :toYear";
+			} else if ($fromYearInt == $toYearInt) {
+				$yearQuery = "wine.year = :fromYear";
+			}
+		}
+		if ($conditional) {
+			$query = $query . " AND " . $yearQuery;
+		} else {
+			$query = $query . " WHERE " . $yearQuery;
+			$conditional = true;
+		}
+		
+		$yearField = true;
+	}
+	
 	$_SESSION ['message'] = $query;
 	
 	$db = Database::getInstance ();
@@ -104,6 +134,20 @@ if (isset ( $_SESSION )) {
 	}
 	if ($grapeVarietyField) {
 		$stmt->bindParam ( ':grapeVariety', $grapeVariety );
+	}
+	if ($yearField) {
+		if (strlen ( $fromYear ) > 0 && strlen ( $toYear ) == 0) {
+			$stmt->bindParam ( ':fromYear', $fromYear );
+		} else if (strlen ( $fromYear ) == 0 && strlen ( $toYear ) > 0) {
+			$stmt->bindParam ( ':toYear', $toYear );
+		} else if (strlen ( $fromYear ) > 0 && strlen ( $toYear ) > 0) {
+			if ($fromYearInt != $toYearInt) {
+				$stmt->bindParam ( ':fromYear', $fromYear );
+				$stmt->bindParam ( ':toYear', $toYear );
+			} else if ($fromYearInt == $toYearInt) {
+				$stmt->bindParam ( ':fromYear', $fromYear );
+			}
+		}
 	}
 	$stmt->execute ();
 	
