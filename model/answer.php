@@ -1,36 +1,38 @@
 <?php
-if(!isset($_SESSION)){
-	session_start();
+if (! isset ( $_SESSION )) {
+	session_start ();
 }
 
 include '../connect/config.php';
-include '../connect/Database.php';
+require_once '../connect/Database.php';
 
-$redirect = "http://" . $_SERVER['HTTP_HOST'] . "/index.php?page=results";
+$redirect = "http://" . $_SERVER ['HTTP_HOST'] . "/index.php?page=results";
 
-$wineName = $_GET['wineName'];
-$wineryName = $_GET['wineryName'];
-$wineRegion = $_GET['wineRegion'];
-$grapeVariety = $_GET['grapeVariety'];
-$fromYear = $_GET['fromYear'];
-$toYear = $_GET['toYear'];
-$minStock = $_GET['minStock'];
-$minOrder = $_GET['minOrder'];
-$minPrice = $_GET['minPrice'];
-$maxPrice = $_GET['maxPrice'];
-$wineNameLike = '%'.$wineName.'%';
+$wineName = $_GET ['wineName'];
+$wineryName = $_GET ['wineryName'];
+$wineRegion = $_GET ['wineRegion'];
+$grapeVariety = $_GET ['grapeVariety'];
+$fromYear = $_GET ['fromYear'];
+$toYear = $_GET ['toYear'];
+$minStock = $_GET ['minStock'];
+$minOrder = $_GET ['minOrder'];
+$minPrice = $_GET ['minPrice'];
+$maxPrice = $_GET ['maxPrice'];
+$wineNameLike = '%' . $wineName . '%';
 $wineNameField = false;
 $conditional = false;
-$wineryNameLike = '%'.$wineryName.'%';
+$wineryNameLike = '%' . $wineryName . '%';
 $wineryNameField = false;
+$wineRegionField = false;
 
-if(isset($_SESSION))
-{
-	$_SESSION['message'] = '';
+if (isset ( $_SESSION )) {
+	$_SESSION ['message'] = '';
 	
 	$query = "SELECT wine.year, wine.wine_name, wine_type.wine_type,
 			grape_variety.variety, winery.winery_name, region.region_name,
-			inventory.on_hand, inventory.cost
+			inventory.on_hand, inventory.cost,
+			(SELECT SUM(qty) FROM items WHERE items.wine_id = wine.wine_id) AS sold,
+			(SELECT SUM(price) FROM items WHERE items.wine_id = wine.wine_id) AS revenue
 			FROM wine
 			JOIN wine_type ON wine.wine_type = wine_type.wine_type_id
 			JOIN wine_variety ON wine.wine_id = wine_variety.wine_id
@@ -39,75 +41,83 @@ if(isset($_SESSION))
 			JOIN region ON winery.region_id = region.region_id
 			JOIN inventory ON inventory.wine_id = wine.wine_id";
 	
-	if(strlen($wineName) > 0)
-	{
-		if(preg_match('/^[a-zA-Z]+$/', $wineName))
-		{
-			$query = $query . " WHERE wine.wine_name LIKE :wineName"; 
+	if (strlen ( $wineName ) > 0) {
+		if (preg_match ( '/^[a-zA-Z]+$/', $wineName )) {
+			$query = $query . " WHERE wine.wine_name LIKE :wineName";
 			$wineNameField = true;
 			$conditional = true;
-		}
-		else
-		{
-			$_SESSION['message'] = 'Wine name must contain letters only!';
+		} else {
+			$_SESSION ['message'] = 'Wine name must contain letters only!';
 		}
 	}
 	
-	if(strlen($wineryName) > 0)
-	{
-		if(preg_match('/^[a-zA-Z \']+$/', $wineryName))
-		{
-			if($conditional)
-			{
+	if (strlen ( $wineryName ) > 0) {
+		if (preg_match ( '/^[a-zA-Z \']+$/', $wineryName )) {
+			if ($conditional) {
 				$query = $query . " AND winery.winery_name LIKE :wineryName";
-			}
-			else 
-			{
+			} else {
 				$query = $query . " WHERE winery.winery_name LIKE :wineryName";
 				$conditional = true;
 			}
 			
 			$wineryNameField = true;
-		}
-		else
-		{
-			$_SESSION['message'] = 'Winery name must contain letters, spaces & apostrophe\'s only!';
+		} else {
+			$_SESSION ['message'] = 'Winery name must contain letters, spaces & apostrophe\'s only!';
 		}
 	}
 	
-	$_SESSION['message'] = $query;
-	
-	$db = Database::getInstance(); 
-	$stmt = $db->prepare($query); 
-	if($wineNameField)
-	{
-		$stmt->bindParam(':wineName', $wineNameLike);
+	if (strlen ( $wineRegion ) > 0 && $wineRegion != 'All') {
+		if (preg_match ( '/^[a-zA-Z \']+$/', $wineRegion )) {
+			if ($conditional) {
+				$query = $query . " AND region.region_name = :wineRegion";
+			} else {
+				$query = $query . " WHERE region.region_name = :wineRegion";
+				$conditional = true;
+			}
+			
+			$wineRegionField = true;
+		} else {
+			$_SESSION ['message'] = 'Region must contain letters, spaces & apostrophe\'s only!';
+		}
 	}
-	if($wineryNameField)
-	{
-		$stmt->bindParam(':wineryName', $wineryNameLike);
-	}
-	$stmt->execute();
 	
-	$results = array();
-	while($row = $stmt->fetch(PDO::FETCH_ASSOC))
-	{
+	$_SESSION ['message'] = $query;
+	
+	$db = Database::getInstance ();
+	$stmt = $db->prepare ( $query );
+	if ($wineNameField) {
+		$stmt->bindParam ( ':wineName', $wineNameLike );
+	}
+	if ($wineryNameField) {
+		$stmt->bindParam ( ':wineryName', $wineryNameLike );
+	}
+	if ($wineRegionField) {
+		$stmt->bindParam ( ':wineRegion', $wineRegion );
+	}
+	$stmt->execute ();
+	
+	$results = array ();
+	while ( $row = $stmt->fetch ( PDO::FETCH_ASSOC ) ) {
 		
-		$result = array('year' => $row['year'],
-						'name' => $row['wine_name'],
-						'type' => $row['wine_type'],
-						'variety' => $row['variety'],
-						'winery' => $row['winery_name'],
-						'region' => $row['region_name'],
-						'onhand' => $row['on_hand'],
-						'cost' => $row['cost']);
-	
-		$results[] = $result;
-	} 
+		$result = array (
+				'year' => $row ['year'],
+				'name' => $row ['wine_name'],
+				'type' => $row ['wine_type'],
+				'variety' => $row ['variety'],
+				'winery' => $row ['winery_name'],
+				'region' => $row ['region_name'],
+				'onhand' => $row ['on_hand'],
+				'cost' => $row ['cost'],
+				'sold' => $row ['sold'],
+				'revenue' => $row ['revenue'] 
+		);
+		
+		$results [] = $result;
+	}
 }
 
-$_SESSION['results'] = $results;
- 
-header('Location: ' . $redirect);
-die();
+$_SESSION ['results'] = $results;
+
+header ( 'Location: ' . $redirect );
+die ();
 ?>

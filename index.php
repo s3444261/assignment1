@@ -1,17 +1,19 @@
 <?php
-if(!isset($_SESSION)){
-    session_start();
+if (! isset ( $_SESSION )) {
+	session_start ();
 }
 
 include 'connect/config.php';
-include 'connect/Database.php';
+require_once 'connect/Database.php';
 include 'controller/Driver.php';
+include 'model/Winedata.php';
 
-$driver = new Driver();
+$driver = Driver::getInstance ();
 
-if(isset($_GET['page'])){
-	$driver->page = $_GET['page'];
+if (isset ( $_GET ['page'] )) {
+	$driver->page = $_GET ['page'];
 }
-$driver->display();
+
+$driver->display ();
 
 ?>
