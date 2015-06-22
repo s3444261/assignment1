@@ -11,10 +11,10 @@ echo '<th>Type</th>';
 echo '<th>Variety</th>';
 echo '<th>Winery</th>';
 echo '<th>Region</th>';
-echo '<th>Stock</th>';
-echo '<th>Cost</th>';
-echo '<th>Sold</th>';
-echo '<th>Revenue</th>';
+echo '<th class="tableRight">Stock</th>';
+echo '<th class="tableRight">Cost</th>';
+echo '<th class="tableRight">Sold</th>';
+echo '<th class="tableRight">Revenue</th>';
 echo '</tr>';
 
 for($i = 0; $i < count ( $_SESSION ['results'] ); $i ++) {
@@ -25,10 +25,10 @@ for($i = 0; $i < count ( $_SESSION ['results'] ); $i ++) {
 	echo '<td>', $_SESSION ['results'] [$i] ['variety'] . '</td>';
 	echo '<td>', $_SESSION ['results'] [$i] ['winery'] . '</td>';
 	echo '<td>', $_SESSION ['results'] [$i] ['region'] . '</td>';
-	echo '<td>', $_SESSION ['results'] [$i] ['onhand'] . '</td>';
-	echo '<td>', $_SESSION ['results'] [$i] ['cost'] . '</td>';
-	echo '<td>', $_SESSION ['results'] [$i] ['sold'] . '</td>';
-	echo '<td>', $_SESSION ['results'] [$i] ['revenue'] . '</td>';
+	echo '<td class="tableRight">', $_SESSION ['results'] [$i] ['onhand'] . '</td>';
+	echo '<td class="tableRight">$', $_SESSION ['results'] [$i] ['cost'] . '</td>';
+	echo '<td class="tableRight">', $_SESSION ['results'] [$i] ['sold'] . '</td>';
+	echo '<td class="tableRight">$', $_SESSION ['results'] [$i] ['revenue'] . '</td>';
 	echo '</tr>';
 }
 

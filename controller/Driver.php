@@ -43,18 +43,68 @@ class Driver {
 		include 'view/containerend.php';
 		include 'view/footer.php';
 	}
-	public function column() {
-		if ($this->_page == 'results') {
-			return 8;
-		} else {
-			return 6;
+	public function column($i) {
+		switch ($i) {
+			case 1 :
+				if ($this->_page == 'results') {
+					return 10;
+				} else {
+					return 4;
+				}
+				break;
+			case 2 :
+				if ($this->_page == 'results') {
+					return 10;
+				} else {
+					return 4;
+				}
+				break;
+			case 3 :
+				if ($this->_page == 'results') {
+					return 11;
+				} else {
+					return 4;
+				}
+				break;
+			case 4 :
+				if ($this->_page == 'results') {
+					return 12;
+				} else {
+					return 8;
+				}
+				break;
 		}
 	}
-	public function offset() {
-		if ($this->_page == 'results') {
-			return 2;
-		} else {
-			return 3;
+	public function offset($i) {
+		switch ($i) {
+			case 1 :
+				if ($this->_page == 'results') {
+					return 2;
+				} else {
+					return 4;
+				}
+				break;
+			case 2 :
+				if ($this->_page == 'results') {
+					return 1;
+				} else {
+					return 4;
+				}
+				break;
+			case 3 :
+				if ($this->_page == 'results') {
+					return 1;
+				} else {
+					return 4;
+				}
+				break;
+			case 4 :
+				if ($this->_page == 'results') {
+					return 0;
+				} else {
+					return 2;
+				}
+				break;
 		}
 	}
 }
