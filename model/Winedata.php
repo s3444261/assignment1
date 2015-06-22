@@ -39,5 +39,15 @@ class Winedata {
 		}
 		return $options;
 	}
+	public function maxPrice() {
+		$query = "SELECT MAX(cost) AS maxPrice FROM inventory";
+		
+		$db = Database::getInstance ();
+		$stmt = $db->prepare ( $query );
+		$stmt->execute ();
+		$row = $stmt->fetch ( PDO::FETCH_ASSOC );
+		
+		return $row ['maxPrice'];
+	}
 }
 ?>

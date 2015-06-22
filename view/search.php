@@ -5,13 +5,13 @@ $wineData = new Winedata ();
 <h1>Search</h1>
 <form action="model/answer.php" method="get">
 	<div class="form-group">
-		<label for="wineName">Wine Name or Part Thereof</label> <input
-			type="text" class="form-control" id="wineName" name="wineName"
+		<label for="wineName">Wine Name</label> <input type="text"
+			class="form-control" id="wineName" name="wineName"
 			placeholder="Wine Name">
 	</div>
 	<div class="form-group">
-		<label for="wineryName">Winery Name or Part Thereof</label> <input
-			type="text" class="form-control" id="wineryName" name="wineryName"
+		<label for="wineryName">Winery Name</label> <input type="text"
+			class="form-control" id="wineryName" name="wineryName"
 			placeholder="Winery Name">
 	</div>
 	<div class="form-group">
@@ -39,24 +39,25 @@ $wineData = new Winedata ();
 	</select>
 	</div>
 	<div class="form-group">
-		<label for="minStock">Minimum Number of Bottles in Stock (Per Wine)</label>
-		<input type="text" class="form-control" id="minStock" name="minStock"
+		<label for="minStock">Minimum Stock</label> <input type="text"
+			class="form-control" id="minStock" name="minStock"
 			placeholder="Minimum Stock">
 	</div>
 	<div class="form-group">
-		<label for="minOrder">Minimum Order (Per Wine)</label> <input
-			type="text" class="form-control" id="minOrder" name="minOrder"
+		<label for="minOrder">Minimum Sold</label> <input type="text"
+			class="form-control" id="minOrder" name="minOrder"
 			placeholder="Minimum Order">
 	</div>
 	<div class="form-group">
-		<label for="minPrice">Price Range - Lowest Price</label> <input
-			type="text" class="form-control" id="minPrice" name="minPrice"
+		<label for="minPrice">Min Price</label> <input type="text"
+			class="form-control" id="minPrice" name="minPrice"
 			placeholder="Minimum Price">
 	</div>
 	<div class="form-group">
-		<label for="maxPrice">Price Range - Highest Price</label> <input
-			type="text" class="form-control" id="maxPrice" name="maxPrice"
-			placeholder="Maximum Price">
+		<label for="maxPrice">Max Price</label> <input type="text"
+			class="form-control" id="maxPrice" name="maxPrice"
+			placeholder="Maximum Price"
+			value="<?php echo $wineData->maxPrice(); ?>">
 	</div>
 	<button type="submit" class="btn btn-default">Submit</button>
 </form>

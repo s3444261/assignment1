@@ -20,6 +20,8 @@ $minStock = $_GET ['minStock'];
 $minOrder = $_GET ['minOrder'];
 $minPrice = $_GET ['minPrice'];
 $maxPrice = $_GET ['maxPrice'];
+$minPriceFloat = floatval ( $_GET ['minPrice'] );
+$maxPriceFloat = floatval ( $_GET ['maxPrice'] );
 $wineNameLike = '%' . $wineName . '%';
 $wineNameField = false;
 $conditional = false;
@@ -29,6 +31,8 @@ $wineRegionField = false;
 $grapeVarietyField = false;
 $yearField = false;
 $minStockField = false;
+$minOrderField = false;
+$priceField = false;
 
 if (isset ( $_SESSION )) {
 	$_SESSION ['message'] = '';
@@ -52,7 +56,7 @@ if (isset ( $_SESSION )) {
 			$wineNameField = true;
 			$conditional = true;
 		} else {
-			$_SESSION ['message'] = 'Wine name must contain letters only!';
+			$_SESSION ['message'] = $_SESSION ['message'] . 'Wine name must contain letters only!<br />';
 		}
 	}
 	
@@ -67,7 +71,7 @@ if (isset ( $_SESSION )) {
 			
 			$wineryNameField = true;
 		} else {
-			$_SESSION ['message'] = 'Winery name must contain letters, spaces & apostrophe\'s only!';
+			$_SESSION ['message'] = $_SESSION ['message'] . 'Winery name must contain letters, spaces & apostrophe\'s only!<br />';
 		}
 	}
 	
@@ -129,11 +133,54 @@ if (isset ( $_SESSION )) {
 			}
 			$minStockField = true;
 		} else {
-			$_SESSION ['message'] = 'Minimum Stock must be an Integer!';
+			$_SESSION ['message'] = $_SESSION ['message'] . 'Minimum Stock must be an Integer!<br />';
 		}
 	}
-	
-	$_SESSION ['message'] = $query;
+	if (strlen ( $minOrder ) > 0) {
+		if (preg_match ( '/^[0-9]+$/', $minOrder )) {
+			if ($conditional) {
+				$query = $query . " AND (SELECT SUM(qty) FROM items WHERE items.wine_id = wine.wine_id) >= :minOrder";
+			} else {
+				$query = $query . " WHERE (SELECT SUM(qty) FROM items WHERE items.wine_id = wine.wine_id) >= :minOrder";
+				$conditional = true;
+			}
+			$minOrderField = true;
+		} else {
+			$_SESSION ['message'] = $_SESSION ['message'] . 'Minimum Order must be an Integer!<br />';
+		}
+	}
+	if ((strlen ( $minPrice ) > 0 && preg_match ( '/^[0-9]+(\.[0-9]+)?$/', $minPrice )) || (strlen ( $minPrice ) == 0)) {
+		if ((strlen ( $maxPrice ) > 0 && preg_match ( '/^[0-9]+(\.[0-9]+)?$/', $maxPrice )) || (strlen ( $maxPrice ) == 0)) {
+			
+			$priceQuery = '';
+			
+			if (strlen ( $minPrice ) > 0 && strlen ( $maxPrice ) == 0) {
+				$priceQuery = "inventory.cost >= :minPrice";
+			} else if (strlen ( $minPrice ) == 0 && strlen ( $maxPrice ) > 0) {
+				$priceQuery = "inventory.cost <= :maxPrice";
+			} else if (strlen ( $minPrice ) > 0 && strlen ( $maxPrice ) > 0) {
+				if ($minPriceFloat > $maxPriceFloat) {
+					$priceQuery = "inventory.cost >= :maxPrice AND inventory.cost <= :minPrice";
+				} else if ($minPriceFloat < $maxPriceFloat) {
+					$priceQuery = "inventory.cost >= :minPrice AND inventory.cost <= :maxPrice";
+				} else if ($minPriceFloat == $maxPriceFloat) {
+					$priceQuery = "inventory.cost = :minPrice";
+				}
+			}
+			if ($conditional) {
+				$query = $query . " AND " . $priceQuery;
+			} else {
+				$query = $query . " WHERE " . $priceQuery;
+				$conditional = true;
+			}
+			
+			$priceField = true;
+		} else {
+			$_SESSION ['message'] = $_SESSION ['message'] . 'Maximum price value must be a Decimal!<br />';
+		}
+	} else {
+		$_SESSION ['message'] = $_SESSION ['message'] . 'Minimum price value must be a Decimal!<br />';
+	}
 	
 	$db = Database::getInstance ();
 	$stmt = $db->prepare ( $query );
@@ -165,6 +212,23 @@ if (isset ( $_SESSION )) {
 	}
 	if ($minStockField) {
 		$stmt->bindParam ( ':minStock', $minStock );
+	}
+	if ($minOrderField) {
+		$stmt->bindParam ( ':minOrder', $minOrder );
+	}
+	if ($priceField) {
+		if (strlen ( $minPrice ) > 0 && strlen ( $maxPrice ) == 0) {
+			$stmt->bindParam ( ':minPrice', $minPrice );
+		} else if (strlen ( $minPrice ) == 0 && strlen ( $maxPrice ) > 0) {
+			$stmt->bindParam ( ':maxPrice', $maxPrice );
+		} else if (strlen ( $minPrice ) > 0 && strlen ( $maxPrice ) > 0) {
+			if ($minPriceFloat != $maxPriceFloat) {
+				$stmt->bindParam ( ':minPrice', $minPrice );
+				$stmt->bindParam ( ':maxPrice', $maxPrice );
+			} else if ($minPriceFloat == $maxPriceFloat) {
+				$stmt->bindParam ( ':minPrice', $minPrice );
+			}
+		}
 	}
 	$stmt->execute ();
 	
