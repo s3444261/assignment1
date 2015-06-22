@@ -1,4 +1,19 @@
 <?php
+/*
+ * Author: Grant Kinkead
+ * Student Number: s3444261
+ * Student Email: s3444261@student.rmit.edu.au
+ *
+ * CPT375 Web Database Applications
+ * 2015 - Study Period 2
+ *
+ * search.php
+ * This file is used to display the form in the web page. The fields are
+ * self explantory so I won't comment each one. The form is formatted
+ * using Twitter Bootstrap - http://getbootstrap.com/. Methods from the
+ * Winedata Class are called in various places throughout the form to
+ * populate the form with data from the database.
+ */
 $wineData = new Winedata ();
 
 ?>

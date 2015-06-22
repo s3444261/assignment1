@@ -1,5 +1,18 @@
 @CHARSET "ISO-8859-1";
 
+/*
+ * Author: Grant Kinkead
+ * Student Number: s3444261
+ * Student Email: s3444261@student.rmit.edu.au
+ *
+ * CPT375 Web Database Applications
+ * 2015 - Study Period 2
+ *
+ * main.css
+ * The purpose of this page is to make additional modifications to the
+ * Twitter Bootstrap css.
+ */
+
 .tableRight {
 	text-align: right;
 }

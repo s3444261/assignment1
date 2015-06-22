@@ -1,4 +1,18 @@
 <?php
+/*
+ * Author: Grant Kinkead
+ * Student Number: s3444261
+ * Student Email: s3444261@student.rmit.edu.au
+ *
+ * CPT375 Web Database Applications
+ * 2015 - Study Period 2
+ *
+ * results.php
+ * This file is used to display the results of the search in a table.
+ * The table is formatted using Twitter Bootstrap - http://getbootstrap.com/.
+ * Some slight modifications to the column alignments have been made. The
+ * css for this manipulation can be found in src/css/main.css
+ */
 echo '<h1>Results</h1>';
 
 echo $_SESSION ['message'] . '<br /><br />';

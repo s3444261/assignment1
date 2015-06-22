@@ -1,4 +1,19 @@
 <?php
+/*
+ * Author: Grant Kinkead
+ * Student Number: s3444261
+ * Student Email: s3444261@student.rmit.edu.au
+ *
+ * CPT375 Web Database Applications
+ * 2015 - Study Period 2
+ *
+ * header.php
+ * This file is used to incorporate the header information at the top of the page.
+ * The base code for the header was obtained from the Twitter Bootstrap -
+ * http://getbootstrap.com/ site and modified by myself. I have added a meta tag
+ * to prevent the search engines from indexing the site and added my own css in
+ * addition to the bootstrap css.
+ */
 $title = 'Assignment 1';
 $page = 'view/search.php';
 ?>
