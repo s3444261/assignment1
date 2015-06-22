@@ -28,6 +28,7 @@ $wineryNameField = false;
 $wineRegionField = false;
 $grapeVarietyField = false;
 $yearField = false;
+$minStockField = false;
 
 if (isset ( $_SESSION )) {
 	$_SESSION ['message'] = '';
@@ -118,6 +119,19 @@ if (isset ( $_SESSION )) {
 		
 		$yearField = true;
 	}
+	if (strlen ( $minStock ) > 0) {
+		if (preg_match ( '/^[0-9]+$/', $minStock )) {
+			if ($conditional) {
+				$query = $query . " AND inventory.on_hand >= :minStock";
+			} else {
+				$query = $query . " WHERE inventory.on_hand >= :minStock";
+				$conditional = true;
+			}
+			$minStockField = true;
+		} else {
+			$_SESSION ['message'] = 'Minimum Stock must be an Integer!';
+		}
+	}
 	
 	$_SESSION ['message'] = $query;
 	
@@ -148,6 +162,9 @@ if (isset ( $_SESSION )) {
 				$stmt->bindParam ( ':fromYear', $fromYear );
 			}
 		}
+	}
+	if ($minStockField) {
+		$stmt->bindParam ( ':minStock', $minStock );
 	}
 	$stmt->execute ();
 	
